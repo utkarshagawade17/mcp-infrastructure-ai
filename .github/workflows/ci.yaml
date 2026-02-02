@@ -43,7 +43,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install ruff black mypy
+          pip install ruff black==25.1.0 mypy
 
       - name: Run Ruff linter
         run: ruff check .
