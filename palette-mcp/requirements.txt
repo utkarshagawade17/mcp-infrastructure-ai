@@ -1,42 +1,12 @@
-# =============================================================================
-# Palette AI Ops Toolkit - Python Dependencies
-# =============================================================================
+# Palette MCP Server Dependencies
+#
+# This module uses the root requirements.txt for all dependencies.
+# Install from project root: pip install -r requirements.txt
+#
+# Core dependencies used by this module:
+# - mcp, fastmcp: MCP server framework
+# - httpx, aiohttp: HTTP clients for Palette API
+# - pydantic, pyyaml: Data validation and policy parsing
+# - openai, anthropic: LLM integration for AI diagnostics
 
-# MCP Server Framework
-mcp>=1.0.0
-fastmcp>=0.1.0
-
-# HTTP Client
-httpx>=0.27.0
-aiohttp>=3.9.0
-
-# Data Processing
-pydantic>=2.5.0
-pyyaml>=6.0.0
-
-# AI/LLM Integration
-openai>=1.0.0
-anthropic>=0.18.0
-
-# Kubernetes Client (for local testing)
-kubernetes>=29.0.0
-
-# Utilities
-python-dotenv>=1.0.0
-structlog>=24.1.0
-tenacity>=8.2.0
-
-# Testing
-pytest>=8.0.0
-pytest-asyncio>=0.23.0
-pytest-cov>=4.1.0
-
-# Development
-black>=24.1.0
-ruff>=0.2.0
-mypy>=1.8.0
-pre-commit>=3.6.0
-
-# Documentation
-mkdocs>=1.5.0
-mkdocs-material>=9.5.0
+-r ../requirements.txt

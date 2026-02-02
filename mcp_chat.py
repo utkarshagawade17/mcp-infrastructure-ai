@@ -2,9 +2,29 @@
 """
 MCP Infrastructure Management Chat Interface
 
-Interactive command-line interface for managing Kubernetes and Palette infrastructure
-through natural language queries. Provides real-time cluster analysis, diagnostics,
-and operational recommendations.
+Interactive command-line interface demonstrating natural language infrastructure
+management for Kubernetes and Spectro Cloud Palette environments.
+
+This is a DEMO interface that showcases:
+1. How AI can assist with infrastructure operations
+2. Natural language query processing for cluster management
+3. Integration pattern with Claude API
+
+DEMO MODE:
+This version uses simulated infrastructure data to demonstrate capabilities
+without requiring live cluster access. In production, this would integrate
+with the MCP servers (k8s-mcp-live and palette-mcp) to fetch real data.
+
+PRODUCTION INTEGRATION:
+To connect to live infrastructure:
+1. Start the MCP servers (python k8s-mcp-live/mcp_server.py)
+2. Use MCP client to invoke tools and get real data
+3. Replace InfrastructureData with MCP tool calls
+
+Example production integration:
+    from mcp import ClientSession
+    async with ClientSession(server_params) as session:
+        result = await session.call_tool("diagnose_cluster", {"cluster_uid": "..."})
 """
 
 import time
@@ -27,7 +47,17 @@ class Colors:
 
 
 class InfrastructureData:
-    """Infrastructure data provider - connects to Kubernetes/Palette APIs"""
+    """
+    Infrastructure data provider - DEMO MODE
+
+    This class provides simulated infrastructure data for demonstration purposes.
+    In production, replace with MCP client calls to:
+    - k8s-mcp-live/mcp_server.py for Kubernetes operations
+    - palette-mcp/mcp_server/palette_mcp.py for Palette operations
+
+    The data structure mirrors real Kubernetes/Palette API responses to
+    demonstrate realistic infrastructure management scenarios.
+    """
 
     @staticmethod
     def get_all_infrastructure_data():
@@ -415,7 +445,9 @@ Set ANTHROPIC_API_KEY environment variable or configure in code."""
 def print_welcome():
     """Display startup banner"""
     api_key = os.environ.get("ANTHROPIC_API_KEY")
-    mode = f"{Colors.GREEN}Connected" if api_key else f"{Colors.YELLOW}Limited Mode"
+    api_status = (
+        f"{Colors.GREEN}Connected" if api_key else f"{Colors.YELLOW}Limited Mode"
+    )
 
     print(
         f"""
@@ -427,7 +459,11 @@ def print_welcome():
 ║                                                                    ║
 ╚════════════════════════════════════════════════════════════════════╝{Colors.END}
 
-{Colors.BOLD}Status:{Colors.END} {mode}{Colors.END}
+{Colors.BOLD}Mode:{Colors.END} {Colors.MAGENTA}DEMO{Colors.END} (using simulated infrastructure data)
+{Colors.BOLD}API:{Colors.END} {api_status}{Colors.END}
+
+{Colors.YELLOW}Note: This demo showcases AI-assisted infrastructure management.
+In production, connects to live MCP servers for real cluster data.{Colors.END}
 
 Query your infrastructure using natural language.
 

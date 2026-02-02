@@ -80,9 +80,9 @@ jobs:
       - name: Run tests with coverage
         run: |
           pytest tests/ \
-            --cov=mcp_server \
-            --cov=ai_agents \
-            --cov=guardrails \
+            --cov=palette-mcp/mcp_server \
+            --cov=palette-mcp/guardrails \
+            --cov=k8s-mcp-live \
             --cov-report=xml \
             --cov-report=html \
             -v

@@ -2,12 +2,33 @@
 
 Model Context Protocol server implementation for Kubernetes and Spectro Cloud Palette infrastructure operations.
 
+---
+
+## Why This Project
+
+This project was created to demonstrate practical expertise in areas directly relevant to the **AI Engineer role at Spectro Cloud**:
+
+| Job Requirement | Demonstrated In This Project |
+|-----------------|------------------------------|
+| MCP server development | Two fully functional MCP servers (Kubernetes + Palette) |
+| Agentic systems | AI-powered diagnostic tools with automated recommendations |
+| AI guardrails & governance | Policy engine with prompt validation, action validation, approval workflows |
+| Python proficiency | ~3,000+ lines of well-structured, typed Python |
+| Kubernetes experience | 11 K8s operational tools with real cluster integration |
+| CI/CD experience | GitHub Actions pipeline with testing, linting, security scanning |
+| Understanding of Spectro Cloud | Palette MCP server modeling real API structure and cluster profiles |
+| Project management | Modular architecture, comprehensive documentation, test coverage |
+
+**Note:** The Palette MCP server operates in demo mode with mock data, demonstrating the architecture and integration patterns that would connect to the real Palette API with proper credentials.
+
+---
+
 ## Overview
 
 This project implements MCP (Model Context Protocol) servers for managing cloud-native infrastructure through programmatic interfaces. The implementation includes two variants:
 
 - **Kubernetes MCP Server**: Production-ready server for Kubernetes cluster management
-- **Palette MCP Server**: Spectro Cloud Palette integration for multi-cloud operations
+- **Palette MCP Server**: Spectro Cloud Palette integration for multi-cloud operations (demo mode)
 
 ## Architecture
 
@@ -15,29 +36,34 @@ The system uses MCP to expose infrastructure operations as callable tools, enabl
 
 ![Architecture Diagram](architecture-diagram.png)
 
-*Three-layer architecture: User Interface (Interactive Console) → MCP Server Layer (Claude API + 18 Tools) → Infrastructure Layer (Multi-Cloud)*
+*Three-layer architecture: User Interface (Interactive Console) → MCP Server Layer (Claude API + 22 Tools) → Infrastructure Layer (Multi-Cloud)*
 
 ### Components
 
 ```
 mcp-infrastructure-ai/
-├── k8s-mcp-live/           # Kubernetes MCP implementation
-│   ├── mcp_server.py       # Core server with 11 operational tools
-│   ├── demo_cli.py         # Command-line interface
-│   └── setup_demo.sh       # Environment setup script
+├── k8s-mcp-live/              # Kubernetes MCP implementation
+│   ├── mcp_server.py          # Core server with 11 operational tools
+│   ├── demo_cli.py            # Command-line interface
+│   └── setup_demo.sh          # Environment setup script
 │
-├── palette-mcp/            # Palette MCP implementation
-│   ├── mcp_server/         # Server core
-│   │   ├── palette_mcp.py  # Main server logic
-│   │   ├── config.py       # Configuration management
-│   │   └── tools/          # Operational tool implementations
+├── palette-mcp/               # Palette MCP implementation
+│   ├── mcp_server/            # Server core
+│   │   ├── palette_mcp.py     # Main server (11 tools + 2 resources)
+│   │   ├── config.py          # Configuration management
+│   │   └── tools/             # Tool implementations
+│   │       ├── cluster_tools.py
+│   │       ├── profile_tools.py
+│   │       └── diagnostic_tools.py
 │   │
-│   └── guardrails/         # Policy enforcement layer
-│       ├── policy_engine.py
+│   └── guardrails/            # AI Governance Layer
+│       ├── policy_engine.py   # Policy enforcement & validation
 │       └── policies/
+│           └── security.yaml  # 17 security rules
 │
-├── mcp_chat.py            # Interactive management console
-└── tests/                 # Test suite
+├── mcp_chat.py                # Interactive demo console
+├── tests/                     # Test suite (21 test cases)
+└── .github/workflows/         # CI/CD pipeline
 ```
 
 ## Quick Start
@@ -56,7 +82,7 @@ git clone <repository-url>
 cd mcp-infrastructure-ai
 
 # Install dependencies
-pip install -r k8s-mcp-live/requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Running Kubernetes MCP Server
@@ -75,9 +101,17 @@ cd k8s-mcp-live
 python mcp_server.py
 ```
 
+### Running Palette MCP Server (Demo Mode)
+
+```bash
+cd palette-mcp
+python -m mcp_server.palette_mcp
+```
+
 ### Running Interactive Console
 
 ```bash
+# Requires ANTHROPIC_API_KEY
 python mcp_chat.py
 ```
 
@@ -103,12 +137,6 @@ python mcp_chat.py
 - Resource utilization analysis
 - Performance metrics
 
-**Policy & Governance**
-- Resource limit validation
-- Security policy checks
-- Compliance monitoring
-- Cost analysis
-
 ### Palette MCP Server
 
 **Multi-Cloud Management**
@@ -121,15 +149,52 @@ python mcp_chat.py
 - Configuration drift detection
 - Pack version tracking
 
-**Enterprise Features**
-- Policy-based governance
-- Approval workflows
-- Audit logging
-- Cost optimization
+**AI-Powered Diagnostics**
+- Automated cluster diagnosis with health scoring
+- Profile recommendations based on workload descriptions
+- Configuration validation against governance policies
+- Cross-cluster comparison for drift detection
+
+### AI Guardrails & Governance
+
+The `guardrails/` module implements enterprise AI safety controls:
+
+**Policy Engine**
+- YAML-based policy definitions
+- Rule evaluation against actions/configurations
+- Approval workflow triggers
+- Audit trail generation
+
+**Prompt Validator**
+- Injection attack detection
+- Out-of-scope request filtering
+- Blocked pattern matching
+
+**Action Validator**
+- Destructive action controls
+- Resource limit enforcement
+- Production environment protection
+
+```python
+# Example: Validating an action against policies
+from guardrails.policy_engine import PolicyEngine, ActionValidator
+
+engine = PolicyEngine()
+validator = ActionValidator(engine)
+
+action = {
+    "type": "create_cluster",
+    "node_count": 15,
+    "gpu_enabled": True
+}
+
+result = validator.validate(action)
+# result.requires_approval = True (GPU + high node count)
+```
 
 ## MCP Tools Reference
 
-### Kubernetes Server Tools
+### Kubernetes Server Tools (11 tools)
 
 | Tool | Description |
 |------|-------------|
@@ -143,26 +208,34 @@ python mcp_chat.py
 | `get_pod_logs` | Retrieve container logs |
 | `get_pod_events` | Fetch pod lifecycle events |
 | `list_services` | Service discovery |
-| `get_namespaces` | List available namespaces |
+| `list_namespaces` | List available namespaces |
 
-### Palette Server Tools
+### Palette Server Tools (11 tools + 2 resources)
 
 | Tool | Description |
 |------|-------------|
 | `list_clusters` | Get managed clusters inventory |
 | `get_cluster_details` | Detailed cluster information |
-| `diagnose_cluster` | Health and compliance analysis |
-| `recommend_profile` | Suggest optimal cluster profiles |
-| `validate_configuration` | Policy validation |
-| `get_cluster_nodes` | Node status across clouds |
-| `analyze_cluster_cost` | Cost breakdown and optimization |
+| `get_cluster_events` | Retrieve cluster events by severity |
+| `get_cluster_cost` | Cost analysis and optimization |
+| `list_cluster_profiles` | Available profile catalog |
+| `get_profile_details` | Profile configuration details |
+| `list_available_packs` | Registry pack listing |
+| `diagnose_cluster` | AI-powered health analysis |
+| `recommend_profile` | Workload-based profile suggestions |
+| `validate_configuration` | Policy compliance validation |
+| `compare_clusters` | Cross-cluster diff analysis |
+
+**Resources:**
+- `palette://clusters` - Real-time cluster status summary
+- `palette://profiles` - Profile catalog for AI context
 
 ## Configuration
 
 ### Environment Variables
 
 ```bash
-# Palette API credentials
+# Palette API credentials (optional - runs in demo mode without)
 export PALETTE_API_KEY="your-api-key"
 export PALETTE_PROJECT_UID="project-uid"
 
@@ -186,6 +259,16 @@ kubectl get nodes
 ```bash
 pytest tests/ -v
 ```
+
+### Test Coverage
+
+The test suite includes 21 test cases covering:
+- Configuration management
+- Cluster tools operations
+- Diagnostic tools functionality
+- Policy engine validation
+- Prompt injection detection
+- Action validation workflows
 
 ### Adding New Tools
 
@@ -224,9 +307,19 @@ policies:
     message: Containers must define resource limits
 ```
 
-## Production Deployment
+## CI/CD Pipeline
 
-### Security Considerations
+The GitHub Actions workflow includes:
+
+- **Code Quality**: Ruff linting, Black formatting, mypy type checking
+- **Unit Tests**: pytest with coverage reporting
+- **Security Scanning**: Trivy vulnerability scanner, Snyk analysis
+- **Container Build**: Docker image with GitHub Container Registry
+- **Integration Tests**: End-to-end testing (when credentials available)
+
+## Production Considerations
+
+### Security
 
 - Use read-only API credentials where possible
 - Enable audit logging
@@ -241,13 +334,6 @@ policies:
 - Implement caching layer
 - Set up monitoring and alerting
 
-### High Availability
-
-- Run multiple server instances
-- Use load balancer for distribution
-- Implement health checks
-- Set up failover mechanisms
-
 ## Integration Examples
 
 ### Automation Workflows
@@ -258,7 +344,6 @@ from mcp_server import tools
 # Automated cluster health check
 health = await tools.diagnose_cluster()
 if health['score'] < 80:
-    # Trigger alerts
     send_alert(health['issues'])
 ```
 
@@ -278,43 +363,22 @@ python -m mcp_server.tools.diagnose_cluster
 
 **Kubernetes API not accessible**
 ```bash
-# Verify cluster connection
 kubectl cluster-info
 export KUBECONFIG=/path/to/kubeconfig
 ```
 
-**Palette API authentication failure**
+**Palette API (if you have access)**
 ```bash
-# Verify credentials
-echo $PALETTE_API_KEY
-# Check API endpoint connectivity
-curl -H "Authorization: Bearer $PALETTE_API_KEY" https://api.spectrocloud.com/v1/health
+curl -H "Authorization: Bearer $PALETTE_API_KEY" \
+  https://api.spectrocloud.com/v1/health
 ```
-
-### Performance Issues
-
-- Enable caching for frequently accessed resources
-- Increase API client timeout values
-- Use batch operations where available
-- Monitor API rate limits
 
 ## Documentation
 
 - [Architecture Details](docs/ARCHITECTURE.md)
 - [Usage Guide](USAGE.md)
-- [API Reference](https://modelcontextprotocol.io/)
-
-## Contributing
-
-1. Fork the repository
-2. Create feature branch
-3. Implement changes with tests
-4. Submit pull request
+- [MCP Protocol Reference](https://modelcontextprotocol.io/)
 
 ## License
 
 MIT License - See LICENSE file for details.
-
-## Support
-
-For issues or questions, open a GitHub issue or contact the development team.

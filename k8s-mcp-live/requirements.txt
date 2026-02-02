@@ -1,11 +1,11 @@
-# Kubernetes MCP Server - Dependencies
+# Kubernetes MCP Server Dependencies
+#
+# This module uses the root requirements.txt for all dependencies.
+# Install from project root: pip install -r requirements.txt
+#
+# Core dependencies used by this module:
+# - mcp, fastmcp: MCP server framework
+# - kubernetes: Kubernetes Python client
+# - python-dotenv: Environment configuration
 
-# MCP Framework
-mcp>=1.0.0
-fastmcp>=0.1.0
-
-# Kubernetes Client
-kubernetes>=29.0.0
-
-# Utilities
-python-dotenv>=1.0.0
+-r ../requirements.txt
