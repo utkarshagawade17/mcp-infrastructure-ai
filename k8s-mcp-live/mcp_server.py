@@ -13,10 +13,8 @@ Capabilities:
 Compatible with any Kubernetes distribution and cloud provider.
 """
 
-import asyncio
 import json
 from datetime import datetime
-from typing import Optional
 from mcp.server.fastmcp import FastMCP
 
 # Kubernetes client
@@ -48,12 +46,12 @@ def init_kubernetes():
         # Try loading from kubeconfig (local development)
         config.load_kube_config()
         print("Connected using kubeconfig")
-    except:
+    except Exception:
         try:
             # Try in-cluster config (running inside K8s)
             config.load_incluster_config()
             print("Connected using in-cluster config")
-        except:
+        except Exception:
             print("Could not connect to Kubernetes cluster")
             return False
     

@@ -10,8 +10,6 @@ MCP server implementation providing programmatic access to Palette operations:
 License: MIT
 """
 
-import asyncio
-import os
 import logging
 from typing import Any
 from datetime import datetime

@@ -8,10 +8,9 @@ and operational recommendations.
 """
 
 import time
-import sys
 import json
 import os
-from typing import Dict, Any, Optional
+from typing import Optional
 from anthropic import Anthropic
 
 # ANSI colors for terminal output

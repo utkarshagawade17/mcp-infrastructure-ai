@@ -73,8 +73,7 @@ async def main():
             diagnose_cluster,
             get_resource_usage,
             describe_pod,
-            get_pod_logs,
-            get_pod_events
+            get_pod_logs
         )
     except ImportError as e:
         print_error(f"Could not import mcp_server: {e}")

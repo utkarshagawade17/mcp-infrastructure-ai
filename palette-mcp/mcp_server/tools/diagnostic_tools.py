@@ -13,7 +13,6 @@ Implements systematic health scoring and issue detection patterns.
 import logging
 from typing import Any, Optional
 from datetime import datetime
-import json
 
 from ..config import PaletteConfig
 
@@ -326,12 +325,12 @@ class DiagnosticTools:
         In production, this would call the configured LLM (OpenAI, LocalAI, etc.)
         """
         
-        # Build prompt for LLM
-        issues_summary = "\n".join([
+        # Build prompt for LLM (for future LLM integration)
+        _issues_summary = "\n".join([
             f"- [{i['severity'].upper()}] {i['issue']}"
             for i in analyzer_results["issues"]
         ])
-        
+
         # For demo, return pre-generated analysis
         # In production: await self._call_llm(prompt)
         
@@ -410,8 +409,8 @@ class DiagnosticTools:
         
         workload = context["workload"].lower()
         cloud = context["cloud_provider"]
-        reqs = context["requirements"]
-        
+        _reqs = context["requirements"]  # Reserved for future use
+
         recommendations = []
         
         # Rule-based + AI recommendations

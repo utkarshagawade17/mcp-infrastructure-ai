@@ -8,8 +8,6 @@ Tests cover:
 """
 
 import pytest
-import asyncio
-from unittest.mock import AsyncMock, patch, MagicMock
 
 # Import modules under test
 import sys
@@ -17,17 +15,14 @@ import os
 # Add palette-mcp to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'palette-mcp'))
 
-from mcp_server.config import PaletteConfig, GuardrailsConfig
+from mcp_server.config import PaletteConfig
 from mcp_server.tools.cluster_tools import ClusterTools
 from mcp_server.tools.profile_tools import ProfileTools
 from mcp_server.tools.diagnostic_tools import DiagnosticTools
 from guardrails.policy_engine import (
     PolicyEngine,
-    PolicyViolation,
-    ValidationResult,
     PromptValidator,
     ActionValidator,
-    PolicySeverity,
     PolicyAction
 )
 
@@ -82,15 +77,15 @@ class TestPaletteConfig:
         config = PaletteConfig()
         assert config.api_endpoint == "https://api.spectrocloud.com"
         assert config.request_timeout == 30
-        assert config.enable_guardrails == True
-    
+        assert config.enable_guardrails
+
     def test_demo_mode_detection(self):
         """Test demo mode is detected when no API key."""
         config = PaletteConfig(api_key="")
-        assert config.is_demo_mode == True
-        
+        assert config.is_demo_mode
+
         config_with_key = PaletteConfig(api_key="test-key")
-        assert config_with_key.is_demo_mode == False
+        assert not config_with_key.is_demo_mode
     
     def test_auth_headers(self):
         """Test authentication headers generation."""
