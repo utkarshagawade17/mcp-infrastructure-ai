@@ -30,9 +30,9 @@ RUN groupadd -r appuser && useradd -r -g appuser appuser
 COPY --from=builder /install /usr/local
 
 # Copy application code
-COPY mcp_server/ ./mcp_server/
-COPY ai_agents/ ./ai_agents/
-COPY guardrails/ ./guardrails/
+COPY palette-mcp/mcp_server/ ./mcp_server/
+COPY palette-mcp/guardrails/ ./guardrails/
+COPY mcp_chat.py ./
 
 # Set ownership
 RUN chown -R appuser:appuser /app
