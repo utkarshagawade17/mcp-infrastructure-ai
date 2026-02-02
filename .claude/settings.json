@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd:*)",
+      "Read(//Users/utkarshagawade/Documents/February 2026/spectro cloud/mcp-infrastructure-ai/**)"
+    ]
+  }
+}

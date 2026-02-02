@@ -1,0 +1,11 @@
+# Kubernetes MCP Server - Dependencies
+
+# MCP Framework
+mcp>=1.0.0
+fastmcp>=0.1.0
+
+# Kubernetes Client
+kubernetes>=29.0.0
+
+# Utilities
+python-dotenv>=1.0.0

@@ -1,0 +1,181 @@
+# =============================================================================
+# Security Policies for Palette AI Ops Toolkit
+# =============================================================================
+# 
+# These policies define security guardrails for AI-driven operations.
+# Violations can result in: logging, warnings, blocks, or approval requirements.
+# =============================================================================
+
+name: security
+version: "1.0.0"
+description: "Security policies for AI-driven Kubernetes operations"
+
+rules:
+  # ---------------------------------------------------------------------------
+  # Container Security
+  # ---------------------------------------------------------------------------
+  
+  - name: no_privileged_containers
+    description: "Containers must not run in privileged mode"
+    severity: critical
+    action: block
+    category: container_security
+    condition: "action.security_context.privileged == true"
+    remediation: |
+      Remove the 'privileged: true' setting from the container security context.
+      If elevated permissions are needed, use specific capabilities instead.
+    references:
+      - "https://kubernetes.io/docs/concepts/security/pod-security-standards/"
+
+  - name: no_host_network
+    description: "Pods should not use host network namespace"
+    severity: critical
+    action: block
+    category: container_security
+    condition: "action.host_network == true"
+    remediation: |
+      Set hostNetwork: false in the pod spec.
+      Use Services and Ingress for network access instead.
+
+  - name: no_host_pid
+    description: "Pods should not share host PID namespace"
+    severity: critical
+    action: block
+    category: container_security
+    condition: "action.host_pid == true"
+    remediation: "Set hostPID: false in the pod spec."
+
+  - name: no_root_user
+    description: "Containers should not run as root"
+    severity: warning
+    action: warn
+    category: container_security
+    condition: "action.security_context.run_as_user == 0"
+    remediation: |
+      Set runAsNonRoot: true and specify a non-zero runAsUser in security context.
+
+  # ---------------------------------------------------------------------------
+  # Resource Controls
+  # ---------------------------------------------------------------------------
+
+  - name: require_resource_limits
+    description: "All containers must have CPU and memory limits defined"
+    severity: warning
+    action: warn
+    category: resource_governance
+    condition: "action.resources.limits == null"
+    remediation: |
+      Add resource limits to all containers:
+      resources:
+        limits:
+          cpu: "1000m"
+          memory: "1Gi"
+        requests:
+          cpu: "100m"
+          memory: "128Mi"
+
+  - name: limit_cpu_cores
+    description: "Container CPU limit should not exceed threshold"
+    severity: info
+    action: warn
+    category: resource_governance
+    condition: "action.resources.limits.cpu > 4"
+    threshold: 4
+    remediation: "Consider if this workload truly needs more than 4 CPU cores."
+
+  - name: limit_memory
+    description: "Container memory limit should not exceed threshold"
+    severity: info  
+    action: warn
+    category: resource_governance
+    condition: "action.resources.limits.memory > 8Gi"
+    threshold: "8Gi"
+    remediation: "Consider if this workload truly needs more than 8GB memory."
+
+  # ---------------------------------------------------------------------------
+  # Network Security
+  # ---------------------------------------------------------------------------
+
+  - name: no_public_load_balancer
+    description: "Public load balancers require security review"
+    severity: warning
+    action: require_approval
+    category: network_security
+    condition: "action.service_type == 'LoadBalancer' and action.annotations['service.beta.kubernetes.io/aws-load-balancer-internal'] != 'true'"
+    approval_group: "security-team"
+    remediation: |
+      For internal services, use internal load balancer annotation:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+
+  - name: require_network_policy
+    description: "Namespaces should have NetworkPolicy defined"
+    severity: warning
+    action: warn
+    category: network_security
+    condition: "action.namespace_has_network_policy == false"
+    remediation: |
+      Create a NetworkPolicy to restrict traffic to/from pods in this namespace.
+
+  # ---------------------------------------------------------------------------
+  # Image Security
+  # ---------------------------------------------------------------------------
+
+  - name: no_latest_tag
+    description: "Container images should not use 'latest' tag"
+    severity: warning
+    action: warn
+    category: image_security
+    condition: "action.image_tag == 'latest' or action.image_tag == null"
+    remediation: |
+      Specify an explicit version tag for container images:
+      image: myapp:v1.2.3
+
+  - name: approved_registries_only
+    description: "Images must come from approved registries"
+    severity: critical
+    action: block
+    category: image_security
+    condition: "action.image_registry not in approved_registries"
+    approved_registries:
+      - "gcr.io"
+      - "ghcr.io"
+      - "docker.io/library"
+      - "quay.io"
+      - "*.amazonaws.com"
+    remediation: |
+      Use images from approved registries only.
+      Contact security team to add new registries.
+
+  # ---------------------------------------------------------------------------
+  # Secret Management
+  # ---------------------------------------------------------------------------
+
+  - name: no_secrets_in_env
+    description: "Sensitive data should use Secrets, not plain env vars"
+    severity: warning
+    action: warn
+    category: secret_management
+    condition: "action.env_contains_sensitive_pattern == true"
+    sensitive_patterns:
+      - "PASSWORD"
+      - "SECRET"
+      - "API_KEY"
+      - "TOKEN"
+      - "CREDENTIAL"
+    remediation: |
+      Use Kubernetes Secrets with envFrom or secretKeyRef instead of 
+      hardcoding sensitive values in environment variables.
+
+# =============================================================================
+# Policy Metadata
+# =============================================================================
+
+metadata:
+  author: "Security Team"
+  last_updated: "2025-01-31"
+  compliance_frameworks:
+    - "CIS Kubernetes Benchmark"
+    - "NSA Kubernetes Hardening Guide"
+    - "Pod Security Standards"
+  review_schedule: "quarterly"
