@@ -41,18 +41,18 @@ diagnostic_tools = DiagnosticTools(config)
 # CLUSTER MANAGEMENT TOOLS
 # =============================================================================
 
+
 @mcp.tool()
 async def list_clusters(
-    project_uid: str | None = None,
-    status_filter: str | None = None
+    project_uid: str | None = None, status_filter: str | None = None
 ) -> dict[str, Any]:
     """
     List all Kubernetes clusters managed by Palette.
-    
+
     Args:
         project_uid: Optional project UID to filter clusters
         status_filter: Optional status filter (Running, Provisioning, Error, etc.)
-    
+
     Returns:
         Dictionary containing list of clusters with their status and basic info
     """
@@ -64,10 +64,10 @@ async def list_clusters(
 async def get_cluster_details(cluster_uid: str) -> dict[str, Any]:
     """
     Get detailed information about a specific cluster.
-    
+
     Args:
         cluster_uid: The unique identifier of the cluster
-    
+
     Returns:
         Comprehensive cluster details including:
         - Cluster metadata and configuration
@@ -82,18 +82,16 @@ async def get_cluster_details(cluster_uid: str) -> dict[str, Any]:
 
 @mcp.tool()
 async def get_cluster_events(
-    cluster_uid: str,
-    severity: str | None = None,
-    limit: int = 50
+    cluster_uid: str, severity: str | None = None, limit: int = 50
 ) -> dict[str, Any]:
     """
     Retrieve recent events for a cluster.
-    
+
     Args:
         cluster_uid: The unique identifier of the cluster
         severity: Optional filter by severity (Info, Warning, Error, Critical)
         limit: Maximum number of events to return (default 50)
-    
+
     Returns:
         List of recent cluster events with timestamps and details
     """
@@ -102,17 +100,14 @@ async def get_cluster_events(
 
 
 @mcp.tool()
-async def get_cluster_cost(
-    cluster_uid: str,
-    time_range: str = "7d"
-) -> dict[str, Any]:
+async def get_cluster_cost(cluster_uid: str, time_range: str = "7d") -> dict[str, Any]:
     """
     Get cost analysis for a cluster.
-    
+
     Args:
         cluster_uid: The unique identifier of the cluster
         time_range: Time range for cost analysis (1d, 7d, 30d)
-    
+
     Returns:
         Cost breakdown by resource type and recommendations for optimization
     """
@@ -124,18 +119,18 @@ async def get_cluster_cost(
 # CLUSTER PROFILE TOOLS
 # =============================================================================
 
+
 @mcp.tool()
 async def list_cluster_profiles(
-    profile_type: str | None = None,
-    cloud_type: str | None = None
+    profile_type: str | None = None, cloud_type: str | None = None
 ) -> dict[str, Any]:
     """
     List available cluster profiles.
-    
+
     Args:
         profile_type: Filter by type (cluster, infra, add-on, system)
         cloud_type: Filter by cloud provider (aws, azure, gcp, vsphere, edge)
-    
+
     Returns:
         List of cluster profiles with their versions and configurations
     """
@@ -147,10 +142,10 @@ async def list_cluster_profiles(
 async def get_profile_details(profile_uid: str) -> dict[str, Any]:
     """
     Get detailed information about a cluster profile.
-    
+
     Args:
         profile_uid: The unique identifier of the profile
-    
+
     Returns:
         Profile details including:
         - All pack layers (OS, K8s, CNI, CSI, add-ons)
@@ -164,16 +159,15 @@ async def get_profile_details(profile_uid: str) -> dict[str, Any]:
 
 @mcp.tool()
 async def list_available_packs(
-    layer: str | None = None,
-    registry: str | None = None
+    layer: str | None = None, registry: str | None = None
 ) -> dict[str, Any]:
     """
     List available packs from registries.
-    
+
     Args:
         layer: Filter by layer (os, k8s, cni, csi, addon)
         registry: Filter by registry name
-    
+
     Returns:
         List of available packs with versions and compatibility info
     """
@@ -185,25 +179,25 @@ async def list_available_packs(
 # AI-POWERED DIAGNOSTIC TOOLS
 # =============================================================================
 
+
 @mcp.tool()
 async def diagnose_cluster(
-    cluster_uid: str,
-    include_recommendations: bool = True
+    cluster_uid: str, include_recommendations: bool = True
 ) -> dict[str, Any]:
     """
     Perform automated diagnosis of cluster health and compliance.
-    
+
     This tool analyzes:
     - Cluster events and alerts
     - Node health and resource utilization
     - Pod status and restart patterns
     - Configuration drift from profile
     - Security vulnerabilities (if Trivy integrated)
-    
+
     Args:
         cluster_uid: The unique identifier of the cluster
         include_recommendations: Whether to include AI-generated recommendations
-    
+
     Returns:
         Comprehensive health report with:
         - Overall health score (0-100)
@@ -219,11 +213,11 @@ async def diagnose_cluster(
 async def recommend_profile(
     workload_description: str,
     cloud_provider: str,
-    requirements: dict[str, Any] | None = None
+    requirements: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """
     Get cluster profile recommendations based on workload requirements.
-    
+
     Args:
         workload_description: Natural language description of the workload
             (e.g., "ML training pipeline with GPU requirements")
@@ -234,7 +228,7 @@ async def recommend_profile(
             - high_availability: HA requirements
             - compliance: Compliance frameworks (HIPAA, PCI-DSS, etc.)
             - budget: Cost constraints
-    
+
     Returns:
         Ranked list of profile recommendations with:
         - Recommended packs and versions
@@ -244,24 +238,21 @@ async def recommend_profile(
     """
     logger.info(f"Generating profile recommendation for: {workload_description}")
     return await diagnostic_tools.recommend_profile(
-        workload_description, 
-        cloud_provider, 
-        requirements
+        workload_description, cloud_provider, requirements
     )
 
 
 @mcp.tool()
 async def validate_configuration(
-    config: dict[str, Any],
-    policy_set: str = "default"
+    config: dict[str, Any], policy_set: str = "default"
 ) -> dict[str, Any]:
     """
     Validate a cluster or profile configuration against governance policies.
-    
+
     Args:
         config: The configuration to validate (cluster or profile spec)
         policy_set: Name of the policy set to validate against
-    
+
     Returns:
         Validation results including:
         - Pass/fail status
@@ -274,22 +265,19 @@ async def validate_configuration(
 
 
 @mcp.tool()
-async def compare_clusters(
-    cluster_uid_1: str,
-    cluster_uid_2: str
-) -> dict[str, Any]:
+async def compare_clusters(cluster_uid_1: str, cluster_uid_2: str) -> dict[str, Any]:
     """
     Compare two clusters for configuration differences.
-    
+
     Useful for:
     - Debugging why one cluster works and another doesn't
     - Ensuring consistency across environments
     - Identifying configuration drift
-    
+
     Args:
         cluster_uid_1: First cluster UID
         cluster_uid_2: Second cluster UID
-    
+
     Returns:
         Detailed comparison including:
         - Profile differences
@@ -305,25 +293,26 @@ async def compare_clusters(
 # RESOURCE MANAGEMENT TOOLS
 # =============================================================================
 
+
 @mcp.resource("palette://clusters")
 async def clusters_resource() -> str:
     """
     Resource endpoint providing real-time cluster status summary.
-    
+
     Returns formatted overview of all clusters for AI context.
     """
     clusters = await cluster_tools.list_clusters()
-    
+
     summary_lines = ["# Palette Clusters Overview\n"]
     summary_lines.append(f"Total clusters: {clusters.get('total', 0)}\n")
-    
+
     for cluster in clusters.get("items", []):
         status_indicator = "[OK]" if cluster["status"] == "Running" else "[WARN]"
         summary_lines.append(
             f"- {status_indicator} **{cluster['name']}** ({cluster['cloud_type']}): "
             f"{cluster['status']} - {cluster['node_count']} nodes"
         )
-    
+
     return "\n".join(summary_lines)
 
 
@@ -331,19 +320,19 @@ async def clusters_resource() -> str:
 async def profiles_resource() -> str:
     """
     Resource endpoint providing cluster profile catalog.
-    
+
     Returns formatted list of available profiles for AI context.
     """
     profiles = await profile_tools.list_profiles()
-    
+
     summary_lines = ["# Available Cluster Profiles\n"]
-    
+
     for profile in profiles.get("items", []):
         summary_lines.append(
             f"- **{profile['name']}** (v{profile['version']}): "
             f"{profile['description']}"
         )
-    
+
     return "\n".join(summary_lines)
 
 
@@ -351,12 +340,13 @@ async def profiles_resource() -> str:
 # SERVER LIFECYCLE
 # =============================================================================
 
+
 def main():
     """Run the MCP server."""
     logger.info("Starting Palette MCP Server...")
     logger.info(f"Palette API Endpoint: {config.api_endpoint}")
     logger.info(f"Server started at {datetime.now().isoformat()}")
-    
+
     # Run the MCP server
     mcp.run()
 

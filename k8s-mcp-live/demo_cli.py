@@ -12,33 +12,40 @@ import asyncio
 import json
 import sys
 
+
 # Add color support
 class Colors:
-    HEADER = '\033[95m'
-    BLUE = '\033[94m'
-    CYAN = '\033[96m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
+    HEADER = "\033[95m"
+    BLUE = "\033[94m"
+    CYAN = "\033[96m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+
 
 def print_header(text):
     print(f"\n{Colors.HEADER}{Colors.BOLD}{'='*60}{Colors.ENDC}")
     print(f"{Colors.HEADER}{Colors.BOLD}{text}{Colors.ENDC}")
     print(f"{Colors.HEADER}{Colors.BOLD}{'='*60}{Colors.ENDC}\n")
 
+
 def print_success(text):
     print(f"{Colors.GREEN}✓ {text}{Colors.ENDC}")
+
 
 def print_warning(text):
     print(f"{Colors.YELLOW}⚠ {text}{Colors.ENDC}")
 
+
 def print_error(text):
     print(f"{Colors.RED}✗ {text}{Colors.ENDC}")
 
+
 def print_info(text):
     print(f"{Colors.CYAN}ℹ {text}{Colors.ENDC}")
+
 
 def print_json(data):
     """Pretty print JSON with colors."""
@@ -57,10 +64,10 @@ def print_json(data):
 
 async def main():
     print_header("Kubernetes MCP Server - Interactive Demo")
-    
+
     # Import the MCP server module
     print_info("Loading MCP server module...")
-    
+
     try:
         from mcp_server import (
             init_kubernetes,
@@ -73,13 +80,13 @@ async def main():
             diagnose_cluster,
             get_resource_usage,
             describe_pod,
-            get_pod_logs
+            get_pod_logs,
         )
     except ImportError as e:
         print_error(f"Could not import mcp_server: {e}")
         print_info("Make sure you're in the k8s-mcp-server directory")
         sys.exit(1)
-    
+
     # Initialize Kubernetes connection
     print_info("Connecting to Kubernetes cluster...")
     if init_kubernetes():
@@ -88,7 +95,7 @@ async def main():
         print_error("Could not connect to Kubernetes cluster")
         print_info("Make sure minikube/kind is running or kubectl is configured")
         sys.exit(1)
-    
+
     # Menu
     tools = {
         "1": ("Get Cluster Info", get_cluster_info, {}),
@@ -102,55 +109,63 @@ async def main():
         "9": ("Get Resource Usage (all)", get_resource_usage, {"namespace": "all"}),
         "10": ("Describe Pod (enter name)", "describe_pod", {}),
         "11": ("Get Pod Logs (enter name)", "get_pod_logs", {}),
-        "q": ("Quit", None, {})
+        "q": ("Quit", None, {}),
     }
-    
+
     while True:
         print_header("Available Tools")
         print("Available operational tools:\n")
-        
+
         for key, (name, _, _) in tools.items():
             if key == "8":
-                print(f"  {Colors.BOLD}{key}. {name}{Colors.ENDC}")  # Highlight diagnose
+                print(
+                    f"  {Colors.BOLD}{key}. {name}{Colors.ENDC}"
+                )  # Highlight diagnose
             else:
                 print(f"  {key}. {name}")
-        
+
         print()
-        choice = input(f"{Colors.CYAN}Select tool (or 'q' to quit): {Colors.ENDC}").strip()
-        
-        if choice == 'q':
+        choice = input(
+            f"{Colors.CYAN}Select tool (or 'q' to quit): {Colors.ENDC}"
+        ).strip()
+
+        if choice == "q":
             print_info("Goodbye!")
             break
-        
+
         if choice not in tools:
             print_warning("Invalid choice")
             continue
-        
+
         name, func, kwargs = tools[choice]
-        
+
         # Handle special cases that need input
         if func == "describe_pod":
             pod_name = input("Enter pod name: ").strip()
-            namespace = input("Enter namespace (default: default): ").strip() or "default"
+            namespace = (
+                input("Enter namespace (default: default): ").strip() or "default"
+            )
             func = describe_pod
             kwargs = {"pod_name": pod_name, "namespace": namespace}
         elif func == "get_pod_logs":
             pod_name = input("Enter pod name: ").strip()
-            namespace = input("Enter namespace (default: default): ").strip() or "default"
+            namespace = (
+                input("Enter namespace (default: default): ").strip() or "default"
+            )
             func = get_pod_logs
             kwargs = {"pod_name": pod_name, "namespace": namespace, "lines": 20}
-        
+
         if func is None:
             continue
-        
+
         print_header(f"Running: {name}")
-        
+
         try:
             result = await func(**kwargs)
             print_json(result)
         except Exception as e:
             print_error(f"Error: {e}")
-        
+
         input(f"\n{Colors.CYAN}Press Enter to continue...{Colors.ENDC}")
 
 
