@@ -28,10 +28,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Initialize FastMCP server
-mcp = FastMCP(
-    "palette",
-    description="Operations toolkit for Spectro Cloud Palette infrastructure management"
-)
+mcp = FastMCP("palette")
 
 # Initialize configuration
 config = PaletteConfig()

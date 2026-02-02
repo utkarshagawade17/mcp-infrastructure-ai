@@ -13,6 +13,10 @@ This project implements MCP (Model Context Protocol) servers for managing cloud-
 
 The system uses MCP to expose infrastructure operations as callable tools, enabling automation, monitoring, and management workflows.
 
+![Architecture Diagram](architecture-diagram.png)
+
+*Three-layer architecture: User Interface (Interactive Console) → MCP Server Layer (Claude API + 18 Tools) → Infrastructure Layer (Multi-Cloud)*
+
 ### Components
 
 ```

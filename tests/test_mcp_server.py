@@ -13,7 +13,9 @@ from unittest.mock import AsyncMock, patch, MagicMock
 
 # Import modules under test
 import sys
-sys.path.insert(0, '..')
+import os
+# Add palette-mcp to path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'palette-mcp'))
 
 from mcp_server.config import PaletteConfig, GuardrailsConfig
 from mcp_server.tools.cluster_tools import ClusterTools
