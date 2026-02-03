@@ -24,9 +24,7 @@ class ProfileTools:
         self.config = config
         self.base_url = f"{config.api_endpoint}/v1"
 
-    async def _make_request(
-        self, method: str, endpoint: str, params: dict = None
-    ) -> dict:
+    async def _make_request(self, method: str, endpoint: str, params: dict = None) -> dict:
         """Make authenticated request to Palette API."""
 
         if self.config.is_demo_mode:
@@ -35,9 +33,7 @@ class ProfileTools:
         url = f"{self.base_url}/{endpoint}"
 
         async with httpx.AsyncClient(timeout=self.config.request_timeout) as client:
-            response = await client.request(
-                method=method, url=url, headers=self.config.auth_headers, params=params
-            )
+            response = await client.request(method=method, url=url, headers=self.config.auth_headers, params=params)
             response.raise_for_status()
             return response.json()
 
@@ -54,15 +50,9 @@ class ProfileTools:
 
             # Apply filters
             if profile_type:
-                profiles = [
-                    p for p in profiles if p.get("spec", {}).get("type") == profile_type
-                ]
+                profiles = [p for p in profiles if p.get("spec", {}).get("type") == profile_type]
             if cloud_type:
-                profiles = [
-                    p
-                    for p in profiles
-                    if cloud_type in p.get("spec", {}).get("cloudTypes", [])
-                ]
+                profiles = [p for p in profiles if cloud_type in p.get("spec", {}).get("cloudTypes", [])]
 
             # Format profiles
             formatted_profiles = []
@@ -76,9 +66,7 @@ class ProfileTools:
                         "cloud_types": profile.get("spec", {}).get("cloudTypes", []),
                         "description": profile.get("spec", {}).get("description", ""),
                         "pack_count": len(profile.get("spec", {}).get("packs", [])),
-                        "created_at": profile.get("metadata", {}).get(
-                            "creationTimestamp"
-                        ),
+                        "created_at": profile.get("metadata", {}).get("creationTimestamp"),
                     }
                 )
 
@@ -148,9 +136,7 @@ class ProfileTools:
             logger.error(f"Error getting profile details: {e}")
             raise
 
-    async def list_packs(
-        self, layer: Optional[str] = None, registry: Optional[str] = None
-    ) -> dict[str, Any]:
+    async def list_packs(self, layer: Optional[str] = None, registry: Optional[str] = None) -> dict[str, Any]:
         """List available packs from registries."""
 
         try:
@@ -163,9 +149,7 @@ class ProfileTools:
             if layer:
                 packs = [p for p in packs if self._determine_layer(p) == layer]
             if registry:
-                packs = [
-                    p for p in packs if p.get("spec", {}).get("registryUid") == registry
-                ]
+                packs = [p for p in packs if p.get("spec", {}).get("registryUid") == registry]
 
             # Group by category
             categorized = {"os": [], "k8s": [], "cni": [], "csi": [], "addon": []}

@@ -25,9 +25,7 @@ class ClusterTools:
         self.config = config
         self.base_url = f"{config.api_endpoint}/v1"
 
-    async def _make_request(
-        self, method: str, endpoint: str, params: dict = None, data: dict = None
-    ) -> dict:
+    async def _make_request(self, method: str, endpoint: str, params: dict = None, data: dict = None) -> dict:
         """Make authenticated request to Palette API."""
 
         # If in demo mode, return mock data
@@ -60,11 +58,7 @@ class ClusterTools:
 
             # Apply status filter if provided
             if status_filter:
-                clusters = [
-                    c
-                    for c in clusters
-                    if c.get("status", {}).get("state") == status_filter
-                ]
+                clusters = [c for c in clusters if c.get("status", {}).get("state") == status_filter]
 
             # Transform to simplified format
             formatted_clusters = []
@@ -77,9 +71,7 @@ class ClusterTools:
                         "cloud_type": cluster.get("spec", {}).get("cloudType"),
                         "node_count": self._get_node_count(cluster),
                         "k8s_version": self._get_k8s_version(cluster),
-                        "created_at": cluster.get("metadata", {}).get(
-                            "creationTimestamp"
-                        ),
+                        "created_at": cluster.get("metadata", {}).get("creationTimestamp"),
                         "health_status": self._calculate_health_status(cluster),
                     }
                 )
@@ -179,9 +171,7 @@ class ClusterTools:
             logger.error(f"Error getting cluster events: {e}")
             raise
 
-    async def get_cluster_cost(
-        self, cluster_uid: str, time_range: str = "7d"
-    ) -> dict[str, Any]:
+    async def get_cluster_cost(self, cluster_uid: str, time_range: str = "7d") -> dict[str, Any]:
         """Get cost analysis for a cluster."""
 
         try:
@@ -242,9 +232,7 @@ class ClusterTools:
                 "NodeHealth",
             ]:
                 health_score -= 20
-                issues.append(
-                    {"type": condition.get("type"), "message": condition.get("message")}
-                )
+                issues.append({"type": condition.get("type"), "message": condition.get("message")})
 
         health_score = max(0, health_score)
 

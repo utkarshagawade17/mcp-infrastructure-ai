@@ -332,13 +332,9 @@ class MCPAssistant:
         # export ANTHROPIC_API_KEY="your-key-here"
         HARDCODED_API_KEY = None  # Do not commit API keys to version control
 
-        self.api_key = (
-            api_key or HARDCODED_API_KEY or os.environ.get("ANTHROPIC_API_KEY")
-        )
+        self.api_key = api_key or HARDCODED_API_KEY or os.environ.get("ANTHROPIC_API_KEY")
         if not self.api_key:
-            print(
-                f"{Colors.YELLOW}Warning: No API key configured. Limited functionality available.{Colors.END}"
-            )
+            print(f"{Colors.YELLOW}Warning: No API key configured. Limited functionality available.{Colors.END}")
             self.client = None
         else:
             self.client = Anthropic(api_key=self.api_key)
@@ -385,9 +381,7 @@ reference this data and provide relevant analysis and recommendations."""
             return self._fallback_response(user_message)
 
         try:
-            messages = self.conversation_history + [
-                {"role": "user", "content": user_message}
-            ]
+            messages = self.conversation_history + [{"role": "user", "content": user_message}]
 
             response = self.client.messages.create(
                 model="claude-sonnet-4-20250514",
@@ -400,9 +394,7 @@ reference this data and provide relevant analysis and recommendations."""
 
             # Update conversation history
             self.conversation_history.append({"role": "user", "content": user_message})
-            self.conversation_history.append(
-                {"role": "assistant", "content": assistant_message}
-            )
+            self.conversation_history.append({"role": "assistant", "content": assistant_message})
 
             # Maintain reasonable history size
             if len(self.conversation_history) > 20:
@@ -445,9 +437,7 @@ Set ANTHROPIC_API_KEY environment variable or configure in code."""
 def print_welcome():
     """Display startup banner"""
     api_key = os.environ.get("ANTHROPIC_API_KEY")
-    api_status = (
-        f"{Colors.GREEN}Connected" if api_key else f"{Colors.YELLOW}Limited Mode"
-    )
+    api_status = f"{Colors.GREEN}Connected" if api_key else f"{Colors.YELLOW}Limited Mode"
 
     print(
         f"""
@@ -486,9 +476,7 @@ def main():
 
     while True:
         try:
-            user_input = input(
-                f"\n{Colors.BOLD}{Colors.BLUE}Query:{Colors.END} "
-            ).strip()
+            user_input = input(f"\n{Colors.BOLD}{Colors.BLUE}Query:{Colors.END} ").strip()
 
             if user_input.lower() in ["exit", "quit", "bye", "q"]:
                 print(f"\n{Colors.GREEN}Session ended.{Colors.END}\n")

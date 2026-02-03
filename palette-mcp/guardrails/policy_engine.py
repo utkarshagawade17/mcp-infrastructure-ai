@@ -84,9 +84,7 @@ class PolicyEngine:
     def _load_policies(self):
         """Load all policy files from the policy directory."""
         if not self.policy_path.exists():
-            logger.warning(
-                f"Policy path {self.policy_path} does not exist, using defaults"
-            )
+            logger.warning(f"Policy path {self.policy_path} does not exist, using defaults")
             self._load_default_policies()
             return
 
@@ -303,10 +301,7 @@ class PolicyEngine:
 
         # Public LB check
         elif "creates_public_lb" in condition:
-            violated = (
-                action.get("service_type") == "LoadBalancer"
-                and action.get("load_balancer_type") == "public"
-            )
+            violated = action.get("service_type") == "LoadBalancer" and action.get("load_balancer_type") == "public"
 
         # Node count check
         elif "node_count" in condition:
@@ -337,9 +332,7 @@ class PolicyEngine:
         }
 
         self.audit_log.append(audit_entry)
-        logger.info(
-            f"Audit: {audit_entry['action_type']} - {audit_entry['validation_result']}"
-        )
+        logger.info(f"Audit: {audit_entry['action_type']} - {audit_entry['validation_result']}")
 
     def _summarize_action(self, action: dict) -> str:
         """Create human-readable summary of action."""
@@ -495,9 +488,7 @@ class ActionValidator:
     def __init__(self, policy_engine: PolicyEngine):
         self.policy_engine = policy_engine
 
-    def validate(
-        self, action: dict[str, Any], auto_approve: bool = False
-    ) -> ValidationResult:
+    def validate(self, action: dict[str, Any], auto_approve: bool = False) -> ValidationResult:
         """
         Validate an action before execution.
 
@@ -517,16 +508,12 @@ class ActionValidator:
         if action_type in self.DESTRUCTIVE_ACTIONS:
             if not auto_approve:
                 policy_result.requires_approval = True
-                policy_result.approval_reason = (
-                    f"Destructive action '{action_type}' requires explicit approval"
-                )
+                policy_result.approval_reason = f"Destructive action '{action_type}' requires explicit approval"
                 policy_result.action_required = PolicyAction.REQUIRE_APPROVAL
 
         elif action_type in self.REQUIRES_APPROVAL:
             if not auto_approve:
                 policy_result.requires_approval = True
-                policy_result.approval_reason = (
-                    f"Action '{action_type}' requires approval per policy"
-                )
+                policy_result.approval_reason = f"Action '{action_type}' requires approval per policy"
 
         return policy_result

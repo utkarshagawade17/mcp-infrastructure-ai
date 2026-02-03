@@ -60,9 +60,7 @@ action_validator = ActionValidator(policy_engine)
 
 
 @mcp.tool()
-async def list_clusters(
-    project_uid: str | None = None, status_filter: str | None = None
-) -> dict[str, Any]:
+async def list_clusters(project_uid: str | None = None, status_filter: str | None = None) -> dict[str, Any]:
     """
     List all Kubernetes clusters managed by Palette.
 
@@ -98,9 +96,7 @@ async def get_cluster_details(cluster_uid: str) -> dict[str, Any]:
 
 
 @mcp.tool()
-async def get_cluster_events(
-    cluster_uid: str, severity: str | None = None, limit: int = 50
-) -> dict[str, Any]:
+async def get_cluster_events(cluster_uid: str, severity: str | None = None, limit: int = 50) -> dict[str, Any]:
     """
     Retrieve recent events for a cluster.
 
@@ -138,9 +134,7 @@ async def get_cluster_cost(cluster_uid: str, time_range: str = "7d") -> dict[str
 
 
 @mcp.tool()
-async def list_cluster_profiles(
-    profile_type: str | None = None, cloud_type: str | None = None
-) -> dict[str, Any]:
+async def list_cluster_profiles(profile_type: str | None = None, cloud_type: str | None = None) -> dict[str, Any]:
     """
     List available cluster profiles.
 
@@ -175,9 +169,7 @@ async def get_profile_details(profile_uid: str) -> dict[str, Any]:
 
 
 @mcp.tool()
-async def list_available_packs(
-    layer: str | None = None, registry: str | None = None
-) -> dict[str, Any]:
+async def list_available_packs(layer: str | None = None, registry: str | None = None) -> dict[str, Any]:
     """
     List available packs from registries.
 
@@ -198,9 +190,7 @@ async def list_available_packs(
 
 
 @mcp.tool()
-async def diagnose_cluster(
-    cluster_uid: str, include_recommendations: bool = True
-) -> dict[str, Any]:
+async def diagnose_cluster(cluster_uid: str, include_recommendations: bool = True) -> dict[str, Any]:
     """
     Perform automated diagnosis of cluster health and compliance.
 
@@ -254,15 +244,11 @@ async def recommend_profile(
         - Trade-off analysis
     """
     logger.info(f"Generating profile recommendation for: {workload_description}")
-    return await diagnostic_tools.recommend_profile(
-        workload_description, cloud_provider, requirements
-    )
+    return await diagnostic_tools.recommend_profile(workload_description, cloud_provider, requirements)
 
 
 @mcp.tool()
-async def validate_configuration(
-    config: dict[str, Any], policy_set: str = "default"
-) -> dict[str, Any]:
+async def validate_configuration(config: dict[str, Any], policy_set: str = "default") -> dict[str, Any]:
     """
     Validate a cluster or profile configuration against governance policies.
 
@@ -290,9 +276,7 @@ async def validate_configuration(
     )
 
     # Get diagnostic tool validation
-    diagnostic_result = await diagnostic_tools.validate_configuration(
-        config, policy_set
-    )
+    diagnostic_result = await diagnostic_tools.validate_configuration(config, policy_set)
 
     # Merge results
     diagnostic_result["guardrails"] = {
@@ -454,9 +438,7 @@ async def validate_action(
 
 
 @mcp.tool()
-async def get_audit_log(
-    action_type: str | None = None, limit: int = 50
-) -> dict[str, Any]:
+async def get_audit_log(action_type: str | None = None, limit: int = 50) -> dict[str, Any]:
     """
     Retrieve the guardrails audit log for compliance tracking.
 
@@ -513,10 +495,7 @@ async def profiles_resource() -> str:
     summary_lines = ["# Available Cluster Profiles\n"]
 
     for profile in profiles.get("items", []):
-        summary_lines.append(
-            f"- **{profile['name']}** (v{profile['version']}): "
-            f"{profile['description']}"
-        )
+        summary_lines.append(f"- **{profile['name']}** (v{profile['version']}): " f"{profile['description']}")
 
     return "\n".join(summary_lines)
 

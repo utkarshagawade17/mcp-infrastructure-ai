@@ -118,16 +118,12 @@ async def main():
 
         for key, (name, _, _) in tools.items():
             if key == "8":
-                print(
-                    f"  {Colors.BOLD}{key}. {name}{Colors.ENDC}"
-                )  # Highlight diagnose
+                print(f"  {Colors.BOLD}{key}. {name}{Colors.ENDC}")  # Highlight diagnose
             else:
                 print(f"  {key}. {name}")
 
         print()
-        choice = input(
-            f"{Colors.CYAN}Select tool (or 'q' to quit): {Colors.ENDC}"
-        ).strip()
+        choice = input(f"{Colors.CYAN}Select tool (or 'q' to quit): {Colors.ENDC}").strip()
 
         if choice == "q":
             print_info("Goodbye!")
@@ -142,16 +138,12 @@ async def main():
         # Handle special cases that need input
         if func == "describe_pod":
             pod_name = input("Enter pod name: ").strip()
-            namespace = (
-                input("Enter namespace (default: default): ").strip() or "default"
-            )
+            namespace = input("Enter namespace (default: default): ").strip() or "default"
             func = describe_pod
             kwargs = {"pod_name": pod_name, "namespace": namespace}
         elif func == "get_pod_logs":
             pod_name = input("Enter pod name: ").strip()
-            namespace = (
-                input("Enter namespace (default: default): ").strip() or "default"
-            )
+            namespace = input("Enter namespace (default: default): ").strip() or "default"
             func = get_pod_logs
             kwargs = {"pod_name": pod_name, "namespace": namespace, "lines": 20}
 

@@ -21,44 +21,26 @@ class PaletteConfig:
     """Configuration for Palette API connection."""
 
     # API Configuration
-    api_endpoint: str = field(
-        default_factory=lambda: os.getenv(
-            "PALETTE_API_ENDPOINT", "https://api.spectrocloud.com"
-        )
-    )
+    api_endpoint: str = field(default_factory=lambda: os.getenv("PALETTE_API_ENDPOINT", "https://api.spectrocloud.com"))
     api_key: str = field(default_factory=lambda: os.getenv("PALETTE_API_KEY", ""))
-    project_uid: Optional[str] = field(
-        default_factory=lambda: os.getenv("PALETTE_PROJECT_UID")
-    )
+    project_uid: Optional[str] = field(default_factory=lambda: os.getenv("PALETTE_PROJECT_UID"))
 
     # Timeout Configuration
-    request_timeout: int = field(
-        default_factory=lambda: int(os.getenv("PALETTE_REQUEST_TIMEOUT", "30"))
-    )
+    request_timeout: int = field(default_factory=lambda: int(os.getenv("PALETTE_REQUEST_TIMEOUT", "30")))
 
     # AI/LLM Configuration
-    llm_provider: str = field(
-        default_factory=lambda: os.getenv("LLM_PROVIDER", "local")
-    )
+    llm_provider: str = field(default_factory=lambda: os.getenv("LLM_PROVIDER", "local"))
     llm_model: str = field(default_factory=lambda: os.getenv("LLM_MODEL", "llama3"))
-    llm_endpoint: Optional[str] = field(
-        default_factory=lambda: os.getenv("LLM_ENDPOINT")
-    )
-    openai_api_key: Optional[str] = field(
-        default_factory=lambda: os.getenv("OPENAI_API_KEY")
-    )
+    llm_endpoint: Optional[str] = field(default_factory=lambda: os.getenv("LLM_ENDPOINT"))
+    openai_api_key: Optional[str] = field(default_factory=lambda: os.getenv("OPENAI_API_KEY"))
 
     # Feature Flags
-    enable_guardrails: bool = field(
-        default_factory=lambda: os.getenv("ENABLE_GUARDRAILS", "true").lower() == "true"
-    )
+    enable_guardrails: bool = field(default_factory=lambda: os.getenv("ENABLE_GUARDRAILS", "true").lower() == "true")
     enable_cost_analysis: bool = field(
-        default_factory=lambda: os.getenv("ENABLE_COST_ANALYSIS", "true").lower()
-        == "true"
+        default_factory=lambda: os.getenv("ENABLE_COST_ANALYSIS", "true").lower() == "true"
     )
     enable_security_scan: bool = field(
-        default_factory=lambda: os.getenv("ENABLE_SECURITY_SCAN", "true").lower()
-        == "true"
+        default_factory=lambda: os.getenv("ENABLE_SECURITY_SCAN", "true").lower() == "true"
     )
 
     # Logging
@@ -67,9 +49,7 @@ class PaletteConfig:
     def __post_init__(self):
         """Validate configuration after initialization."""
         if not self.api_key:
-            logger.warning(
-                "PALETTE_API_KEY not set. Running in demo mode with mock data."
-            )
+            logger.warning("PALETTE_API_KEY not set. Running in demo mode with mock data.")
 
         # Configure logging
         logging.basicConfig(
@@ -125,26 +105,17 @@ class GuardrailsConfig:
     """Configuration for AI guardrails and governance."""
 
     # Policy Configuration
-    policy_path: str = field(
-        default_factory=lambda: os.getenv(
-            "GUARDRAILS_POLICY_PATH", "./guardrails/policies"
-        )
-    )
+    policy_path: str = field(default_factory=lambda: os.getenv("GUARDRAILS_POLICY_PATH", "./guardrails/policies"))
 
     # Validation Settings
-    strict_mode: bool = field(
-        default_factory=lambda: os.getenv("GUARDRAILS_STRICT", "false").lower()
-        == "true"
-    )
+    strict_mode: bool = field(default_factory=lambda: os.getenv("GUARDRAILS_STRICT", "false").lower() == "true")
 
     # Approval Requirements
     require_approval_for_delete: bool = field(
-        default_factory=lambda: os.getenv("REQUIRE_APPROVAL_DELETE", "true").lower()
-        == "true"
+        default_factory=lambda: os.getenv("REQUIRE_APPROVAL_DELETE", "true").lower() == "true"
     )
     require_approval_for_scale: bool = field(
-        default_factory=lambda: os.getenv("REQUIRE_APPROVAL_SCALE", "false").lower()
-        == "true"
+        default_factory=lambda: os.getenv("REQUIRE_APPROVAL_SCALE", "false").lower() == "true"
     )
 
     # Cost Guardrails
@@ -154,10 +125,8 @@ class GuardrailsConfig:
 
     # Security Guardrails
     block_public_endpoints: bool = field(
-        default_factory=lambda: os.getenv("BLOCK_PUBLIC_ENDPOINTS", "true").lower()
-        == "true"
+        default_factory=lambda: os.getenv("BLOCK_PUBLIC_ENDPOINTS", "true").lower() == "true"
     )
     require_resource_limits: bool = field(
-        default_factory=lambda: os.getenv("REQUIRE_RESOURCE_LIMITS", "true").lower()
-        == "true"
+        default_factory=lambda: os.getenv("REQUIRE_RESOURCE_LIMITS", "true").lower() == "true"
     )

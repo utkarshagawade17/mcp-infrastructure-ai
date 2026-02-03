@@ -26,9 +26,7 @@ class DiagnosticTools:
         self.config = config
         self.llm_config = config.get_llm_config()
 
-    async def diagnose_cluster(
-        self, cluster_uid: str, include_recommendations: bool = True
-    ) -> dict[str, Any]:
+    async def diagnose_cluster(self, cluster_uid: str, include_recommendations: bool = True) -> dict[str, Any]:
         """
         Perform comprehensive cluster health diagnosis.
 
@@ -52,9 +50,7 @@ class DiagnosticTools:
         # Step 4: Enrich with AI analysis if recommendations requested
         enriched_analysis = {}
         if include_recommendations and analyzer_results["issues"]:
-            enriched_analysis = await self._get_enriched_analysis(
-                cluster_state, analyzer_results
-            )
+            enriched_analysis = await self._get_enriched_analysis(cluster_state, analyzer_results)
 
         return {
             "cluster_uid": cluster_uid,
@@ -64,20 +60,8 @@ class DiagnosticTools:
                 "score": health_score,
                 "status": self._score_to_status(health_score),
                 "total_issues": len(analyzer_results["issues"]),
-                "critical_issues": len(
-                    [
-                        i
-                        for i in analyzer_results["issues"]
-                        if i["severity"] == "critical"
-                    ]
-                ),
-                "warning_issues": len(
-                    [
-                        i
-                        for i in analyzer_results["issues"]
-                        if i["severity"] == "warning"
-                    ]
-                ),
+                "critical_issues": len([i for i in analyzer_results["issues"] if i["severity"] == "critical"]),
+                "warning_issues": len([i for i in analyzer_results["issues"] if i["severity"] == "warning"]),
             },
             "issues": analyzer_results["issues"],
             "enriched_analysis": enriched_analysis,
@@ -124,9 +108,7 @@ class DiagnosticTools:
             "timestamp": datetime.utcnow().isoformat(),
         }
 
-    async def validate_configuration(
-        self, config: dict, policy_set: str = "default"
-    ) -> dict[str, Any]:
+    async def validate_configuration(self, config: dict, policy_set: str = "default") -> dict[str, Any]:
         """
         Validate configuration against governance policies.
 
@@ -156,9 +138,7 @@ class DiagnosticTools:
 
         # Calculate compliance score
         total_policies = len(policies)
-        compliance_score = (
-            (len(passed) / total_policies * 100) if total_policies > 0 else 100
-        )
+        compliance_score = (len(passed) / total_policies * 100) if total_policies > 0 else 100
 
         return {
             "config_type": self._detect_config_type(config),
@@ -178,9 +158,7 @@ class DiagnosticTools:
             "timestamp": datetime.utcnow().isoformat(),
         }
 
-    async def compare_clusters(
-        self, cluster_uid_1: str, cluster_uid_2: str
-    ) -> dict[str, Any]:
+    async def compare_clusters(self, cluster_uid_1: str, cluster_uid_2: str) -> dict[str, Any]:
         """
         Compare two clusters for configuration differences.
 
@@ -205,9 +183,7 @@ class DiagnosticTools:
             "cluster_2": {"uid": cluster_uid_2, "name": cluster_2.get("name")},
             "comparison_summary": {
                 "total_differences": len(differences),
-                "significant_differences": len(
-                    [d for d in differences if d.get("significance") == "high"]
-                ),
+                "significant_differences": len([d for d in differences if d.get("significance") == "high"]),
                 "drift_detected": any(d.get("type") == "drift" for d in differences),
             },
             "differences": differences,
@@ -280,9 +256,7 @@ class DiagnosticTools:
 
             # Check for pressure conditions
             for condition in node.get("conditions", []):
-                if condition.get("status") == "True" and "Pressure" in condition.get(
-                    "type", ""
-                ):
+                if condition.get("status") == "True" and "Pressure" in condition.get("type", ""):
                     issues.append(
                         {
                             "analyzer": "NodePressure",
@@ -347,9 +321,7 @@ class DiagnosticTools:
             "analysis_duration_ms": 150,
         }
 
-    async def _get_enriched_analysis(
-        self, cluster_state: dict, analyzer_results: dict
-    ) -> dict:
+    async def _get_enriched_analysis(self, cluster_state: dict, analyzer_results: dict) -> dict:
         """
         Use LLM to provide intelligent analysis and recommendations.
 
@@ -357,12 +329,7 @@ class DiagnosticTools:
         """
 
         # Build prompt for LLM (for future LLM integration)
-        _issues_summary = "\n".join(
-            [
-                f"- [{i['severity'].upper()}] {i['issue']}"
-                for i in analyzer_results["issues"]
-            ]
-        )
+        _issues_summary = "\n".join([f"- [{i['severity'].upper()}] {i['issue']}" for i in analyzer_results["issues"]])
 
         # For demo, return pre-generated analysis
         # In production: await self._call_llm(prompt)
@@ -592,9 +559,7 @@ class DiagnosticTools:
             )
 
         # Compare profiles
-        if cluster_1.get("profile", {}).get("version") != cluster_2.get(
-            "profile", {}
-        ).get("version"):
+        if cluster_1.get("profile", {}).get("version") != cluster_2.get("profile", {}).get("version"):
             differences.append(
                 {
                     "field": "profile_version",
@@ -607,20 +572,12 @@ class DiagnosticTools:
 
         return differences
 
-    async def _analyze_differences(
-        self, differences: list, cluster_1: dict, cluster_2: dict
-    ) -> dict:
+    async def _analyze_differences(self, differences: list, cluster_1: dict, cluster_2: dict) -> dict:
         """Analyze the significance of differences."""
         return {
             "summary": f"Found {len(differences)} configuration differences",
-            "risk_assessment": (
-                "medium"
-                if any(d["significance"] == "high" for d in differences)
-                else "low"
-            ),
+            "risk_assessment": ("medium" if any(d["significance"] == "high" for d in differences) else "low"),
             "recommendation": (
-                "Consider synchronizing configurations to ensure consistency"
-                if differences
-                else "Clusters are in sync"
+                "Consider synchronizing configurations to ensure consistency" if differences else "Clusters are in sync"
             ),
         }

@@ -116,11 +116,7 @@ async def list_namespaces() -> dict:
                 {
                     "name": ns.metadata.name,
                     "status": ns.status.phase,
-                    "created": (
-                        ns.metadata.creation_timestamp.isoformat()
-                        if ns.metadata.creation_timestamp
-                        else None
-                    ),
+                    "created": (ns.metadata.creation_timestamp.isoformat() if ns.metadata.creation_timestamp else None),
                     "labels": ns.metadata.labels or {},
                 }
             )
@@ -165,11 +161,7 @@ async def list_pods(namespace: str = "default", show_all: bool = False) -> dict:
                                 else (
                                     "waiting"
                                     if cs.state.waiting
-                                    else (
-                                        "terminated"
-                                        if cs.state.terminated
-                                        else "unknown"
-                                    )
+                                    else ("terminated" if cs.state.terminated else "unknown")
                                 )
                             ),
                         }
@@ -189,11 +181,7 @@ async def list_pods(namespace: str = "default", show_all: bool = False) -> dict:
                         if container_statuses
                         else "0/0"
                     ),
-                    "restarts": (
-                        sum(c["restart_count"] for c in container_statuses)
-                        if container_statuses
-                        else 0
-                    ),
+                    "restarts": (sum(c["restart_count"] for c in container_statuses) if container_statuses else 0),
                     "age": _calculate_age(pod.metadata.creation_timestamp),
                     "node": pod.spec.node_name,
                     "containers": container_statuses,
@@ -306,9 +294,7 @@ async def list_services(namespace: str = "default") -> dict:
 
 
 @mcp.tool()
-async def get_pod_logs(
-    pod_name: str, namespace: str = "default", lines: int = 50
-) -> dict:
+async def get_pod_logs(pod_name: str, namespace: str = "default", lines: int = 50) -> dict:
     """
     Get logs from a pod.
 
@@ -321,9 +307,7 @@ async def get_pod_logs(
         return {"error": "Not connected to a Kubernetes cluster"}
 
     try:
-        logs = core_v1.read_namespaced_pod_log(
-            name=pod_name, namespace=namespace, tail_lines=lines
-        )
+        logs = core_v1.read_namespaced_pod_log(name=pod_name, namespace=namespace, tail_lines=lines)
 
         return {"pod": pod_name, "namespace": namespace, "lines": lines, "logs": logs}
     except ApiException as e:
@@ -345,9 +329,7 @@ async def get_pod_events(pod_name: str, namespace: str = "default") -> dict:
     try:
         # Get events for the pod
         field_selector = f"involvedObject.name={pod_name}"
-        events = core_v1.list_namespaced_event(
-            namespace=namespace, field_selector=field_selector
-        )
+        events = core_v1.list_namespaced_event(namespace=namespace, field_selector=field_selector)
 
         event_list = []
         for event in events.items:
@@ -357,16 +339,8 @@ async def get_pod_events(pod_name: str, namespace: str = "default") -> dict:
                     "reason": event.reason,
                     "message": event.message,
                     "count": event.count,
-                    "first_seen": (
-                        event.first_timestamp.isoformat()
-                        if event.first_timestamp
-                        else None
-                    ),
-                    "last_seen": (
-                        event.last_timestamp.isoformat()
-                        if event.last_timestamp
-                        else None
-                    ),
+                    "first_seen": (event.first_timestamp.isoformat() if event.first_timestamp else None),
+                    "last_seen": (event.last_timestamp.isoformat() if event.last_timestamp else None),
                 }
             )
 
@@ -405,21 +379,10 @@ async def describe_pod(pod_name: str, namespace: str = "default") -> dict:
             container_info = {
                 "name": c.name,
                 "image": c.image,
-                "ports": [
-                    {"container_port": p.container_port, "protocol": p.protocol}
-                    for p in (c.ports or [])
-                ],
+                "ports": [{"container_port": p.container_port, "protocol": p.protocol} for p in (c.ports or [])],
                 "resources": {
-                    "requests": (
-                        dict(c.resources.requests)
-                        if c.resources and c.resources.requests
-                        else {}
-                    ),
-                    "limits": (
-                        dict(c.resources.limits)
-                        if c.resources and c.resources.limits
-                        else {}
-                    ),
+                    "requests": (dict(c.resources.requests) if c.resources and c.resources.requests else {}),
+                    "limits": (dict(c.resources.limits) if c.resources and c.resources.limits else {}),
                 },
                 "env_vars": len(c.env or []),
                 "volume_mounts": len(c.volume_mounts or []),
@@ -445,11 +408,7 @@ async def describe_pod(pod_name: str, namespace: str = "default") -> dict:
             "status": pod.status.phase,
             "node": pod.spec.node_name,
             "ip": pod.status.pod_ip,
-            "created": (
-                pod.metadata.creation_timestamp.isoformat()
-                if pod.metadata.creation_timestamp
-                else None
-            ),
+            "created": (pod.metadata.creation_timestamp.isoformat() if pod.metadata.creation_timestamp else None),
             "labels": pod.metadata.labels or {},
             "annotations": pod.metadata.annotations or {},
             "containers": containers,
@@ -497,16 +456,8 @@ async def get_node_status() -> dict:
                         if k.startswith("node-role.kubernetes.io/")
                     ],
                     "age": _calculate_age(node.metadata.creation_timestamp),
-                    "version": (
-                        node.status.node_info.kubelet_version
-                        if node.status.node_info
-                        else None
-                    ),
-                    "os": (
-                        node.status.node_info.os_image
-                        if node.status.node_info
-                        else None
-                    ),
+                    "version": (node.status.node_info.kubelet_version if node.status.node_info else None),
+                    "os": (node.status.node_info.os_image if node.status.node_info else None),
                     "capacity": {
                         "cpu": capacity.get("cpu"),
                         "memory": capacity.get("memory"),
@@ -559,10 +510,7 @@ async def diagnose_cluster() -> dict:
                                 "details": cond.message,
                             }
                         )
-                    elif (
-                        cond.type in ["MemoryPressure", "DiskPressure", "PIDPressure"]
-                        and cond.status == "True"
-                    ):
+                    elif cond.type in ["MemoryPressure", "DiskPressure", "PIDPressure"] and cond.status == "True":
                         issues.append(
                             {
                                 "severity": "warning",
@@ -630,28 +578,20 @@ async def diagnose_cluster() -> dict:
 
         # Generate recommendations
         if any(i["issue"].startswith("Node is not ready") for i in issues):
-            recommendations.append(
-                "Check node status with 'kubectl describe node <name>'"
-            )
+            recommendations.append("Check node status with 'kubectl describe node <name>'")
 
         if any("restart" in str(w.get("issue", "")).lower() for w in warnings):
-            recommendations.append(
-                "Check pod logs for containers with high restart counts"
-            )
+            recommendations.append("Check pod logs for containers with high restart counts")
 
         if any("Pending" in str(i.get("issue", "")) for i in issues):
-            recommendations.append(
-                "Check if cluster has sufficient resources for pending pods"
-            )
+            recommendations.append("Check if cluster has sufficient resources for pending pods")
 
         if not issues and not warnings:
             recommendations.append("Cluster appears healthy. Continue monitoring.")
 
         # Calculate health score
         critical_count = sum(1 for i in issues if i["severity"] == "critical")
-        warning_count = sum(1 for i in issues if i["severity"] == "warning") + len(
-            warnings
-        )
+        warning_count = sum(1 for i in issues if i["severity"] == "warning") + len(warnings)
 
         if critical_count > 0:
             health_score = max(0, 50 - (critical_count * 20))
