@@ -28,11 +28,11 @@ from .tools.diagnostic_tools import DiagnosticTools
 guardrails_path = Path(__file__).parent.parent / "guardrails"
 sys.path.insert(0, str(guardrails_path.parent))
 
-from guardrails.policy_engine import (
+from guardrails.policy_engine import (  # noqa: E402
     PolicyEngine,
     ActionValidator,
     PromptValidator,
-)  # noqa: E402
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
